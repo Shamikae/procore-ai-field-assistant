@@ -1,3 +1,4 @@
+![CI](https://github.com/Shamikae/procore-ai-field-assistant/actions/workflows/ci.yml/badge.svg)
 # Procore AI Field Assistant (Mock Case Study)
 
 **Author:** Shamika Earle  
