@@ -1,0 +1,35 @@
+{
+  "project": "Main Street Bridge",
+  "date": "2025-11-12",
+  "weather": {
+    "am": "Light rain",
+    "pm": "Overcast"
+  },
+  "labor": [
+    {
+      "trade": "Concrete",
+      "count": 8
+    },
+    {
+      "trade": "Electrical",
+      "count": 4
+    }
+  ],
+  "equipment": [
+    {
+      "name": "Excavator CAT320",
+      "hours": 6.5
+    },
+    {
+      "name": "Scissor lift",
+      "hours": 3.0
+    }
+  ],
+  "work_completed": [
+    "Formwork installed on Pier 3",
+    "Conduit pulled along East abutment"
+  ],
+  "issues": [],
+  "notes": "Coordinate lane closure schedule for Thursday",
+  "status": "Ready for Procore"
+}

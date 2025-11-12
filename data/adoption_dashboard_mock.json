@@ -1,0 +1,35 @@
+{
+  "template_usage_rate": 0.72,
+  "avg_time_saved_minutes": 18,
+  "sop_views": 134,
+  "active_users": 27,
+  "feedback_positive_pct": 0.86,
+  "projects": [
+    {
+      "name": "Main St Bridge",
+      "adoption": 0.78
+    },
+    {
+      "name": "Substation A",
+      "adoption": 0.66
+    },
+    {
+      "name": "Airport Paving",
+      "adoption": 0.59
+    },
+    {
+      "name": "Rail Span 12",
+      "adoption": 0.81
+    }
+  ],
+  "trend_last_8_weeks": [
+    0.45,
+    0.46,
+    0.58,
+    0.56,
+    0.64,
+    0.7,
+    0.79,
+    0.77
+  ]
+}

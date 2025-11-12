@@ -1,0 +1,9 @@
+Hi, I’m Shamika. This is a quick demo of the Procore AI Field Assistant.
+It’s designed to solve a common problem: users struggle to use digital tools consistently.
+
+In this demo, I’ll create a safety inspection in seconds using plain language.
+I choose the project, confirm workers, and add notes. The assistant produces a Procore-ready JSON output.
+Same flow for Daily Logs and RFIs.
+
+In a pilot, this reduces onboarding time, increases template adoption, and cuts entry errors.
+When Haugland is ready, this stub connects to Procore APIs and Power BI for real-time analytics.

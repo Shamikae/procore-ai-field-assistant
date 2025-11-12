@@ -1,0 +1,32 @@
+{
+  "Safety Inspection": {
+    "category": "Safety",
+    "kpis": [
+      "PPE compliance",
+      "Fall protection",
+      "Housekeeping",
+      "Equipment checks"
+    ],
+    "checklist_version": "v1.2"
+  },
+  "Quality Inspection": {
+    "category": "Quality",
+    "kpis": [
+      "Spec conformance",
+      "Concrete slump",
+      "Rebar spacing",
+      "Finish quality"
+    ],
+    "checklist_version": "v1.0"
+  },
+  "Equipment Action Plan": {
+    "category": "Equipment",
+    "kpis": [
+      "PM schedule adherence",
+      "Downtime hours",
+      "Fuel usage",
+      "Operator certs"
+    ],
+    "checklist_version": "v1.1"
+  }
+}

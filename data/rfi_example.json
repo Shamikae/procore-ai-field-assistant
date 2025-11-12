@@ -1,0 +1,13 @@
+{
+  "project": "Main Street Bridge",
+  "rfi_number": "RFI-023",
+  "subject": "Clarification on conduit routing near East abutment",
+  "question": "Detail calls for 3\" rigid conduit; spacing fits 2.5\". Advise routing & support spacing.",
+  "proposed_solution": "Use 2.5\" conduit with strut support at 5' spacing; update as-built.",
+  "required_date": "2025-11-12",
+  "attachments": [
+    "east_abutment_photo.jpg",
+    "detail_page_42.pdf"
+  ],
+  "status": "Ready for Procore"
+}

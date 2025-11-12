@@ -1,0 +1,31 @@
+{
+  "project": "Main Street Bridge",
+  "type": "Safety Inspection",
+  "date": "2025-11-11",
+  "team": {
+    "workers_on_site": 12,
+    "foreman": "J. Rivera"
+  },
+  "incidents": [],
+  "checklist": [
+    {
+      "item": "PPE compliance",
+      "status": "Pass"
+    },
+    {
+      "item": "Fall protection",
+      "status": "Pass"
+    },
+    {
+      "item": "Housekeeping",
+      "status": "Needs Attention",
+      "notes": "Debris near Pier 3"
+    }
+  ],
+  "attachments": [
+    "photo_001.jpg",
+    "photo_002.jpg",
+    "photo_003.jpg"
+  ],
+  "status": "Ready for Procore"
+}
