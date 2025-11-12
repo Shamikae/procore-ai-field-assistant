@@ -23,13 +23,22 @@ jobs:
           git config --global user.email "actions@github.com"
           git config --global user.name "GitHub Actions"
 
-      - name: Mirror repo to Space
+      - name: Clone Space with credentials
         env:
+          HF_USER: ${{ vars.HF_USER }}
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
           HF_SPACE: ${{ vars.HF_SPACE }}
         run: |
-          # clone the space (or pull if it exists)
-          rm -rf space && git clone https://huggingface.co/spaces/$HF_SPACE space
+          rm -rf space
+          # IMPORTANT: include username and token in the URL
+          git clone https://${HF_USER}:${HF_TOKEN}@huggingface.co/spaces/${HF_SPACE} space
+
+      - name: Sync repo into Space and push
+        env:
+          HF_USER: ${{ vars.HF_USER }}
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+          HF_SPACE: ${{ vars.HF_SPACE }}
+        run: |
           rsync -a --delete --exclude ".git" ./ space/
           cd space
           git add -A
@@ -37,5 +46,5 @@ jobs:
             echo "No changes to push."
           else
             git commit -m "Deploy from GitHub Actions: $GITHUB_SHA"
-            git push https://$HF_TOKEN@huggingface.co/spaces/$HF_SPACE HEAD:main
+            git push https://${HF_USER}:${HF_TOKEN}@huggingface.co/spaces/${HF_SPACE} HEAD:main
           fi
