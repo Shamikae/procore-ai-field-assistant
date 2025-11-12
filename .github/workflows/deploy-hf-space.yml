@@ -2,17 +2,8 @@ name: Deploy to Hugging Face Spaces
 
 on:
   push:
-    branches: [ main ]
-    paths:
-      - "app/**"
-      - ".streamlit/**"
-      - "data/**"
-      - "metrics/**"
-      - "playbook/**"
-      - "requirements.txt"
-      - "app.py"
-      - "README.md"
-  workflow_dispatch: {}
+    branches: [main]
+  workflow_dispatch:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -22,28 +13,50 @@ jobs:
   push-to-space:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout (with LFS)
+      - name: Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
           lfs: true
 
-      - name: Set up git user
+      - name: Configure git
         run: |
-          git config --global user.email "actions@github.com"
           git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
 
-      # Optional: ensure we don't commit huge local artifacts
-      - name: Add sensible .gitignore (no venv, caches)
-        run: |
-          printf "%s\n" \
-            ".venv/" "__pycache__/" ".pytest_cache/" "node_modules/" \
-            "*.zip" "*.log" > .gitignore || true
-
-      - name: Push to Space
+      - name: Clone Space repo
         env:
-          HF_TOKEN: ${{ secrets.HF_TOKEN }}          # create this secret (Write token)
-          HF_SPACE: ${{ vars.HF_SPACE }}             # e.g. shamikae/procore-ai-field-assistant
+          HF_SPACE: ${{ vars.HF_SPACE }}
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: |
-          # Push current commit to the Space main branch
-          git push https://$(echo $HF_SPACE | cut -d/ -f1):$HF_TOKEN@huggingface.co/spaces/$HF_SPACE HEAD:main
+          rm -rf /tmp/space
+          git clone "https://oauth2:${HF_TOKEN}@huggingface.co/spaces/${HF_SPACE}" /tmp/space
+
+      - name: Prepare dist folder
+        run: |
+          rm -rf dist && mkdir -p dist
+          rsync -a \
+            --exclude ".git" \
+            --exclude ".github" \
+            --exclude ".venv" \
+            --exclude "__pycache__" \
+            --exclude ".pytest_cache" \
+            --exclude "node_modules" \
+            --exclude "*.zip" \
+            ./ dist/
+
+      - name: Sync dist to Space
+        run: |
+          rsync -a --delete --exclude ".git" dist/ /tmp/space/
+
+      - name: Commit and push
+        run: |
+          cd /tmp/space
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No changes to push."
+            exit 0
+          fi
+          git commit -m "Deploy from GitHub Actions"
+          git pull --rebase origin main || true
+          git push origin HEAD:main
