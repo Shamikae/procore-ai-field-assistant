@@ -1,3 +1,10 @@
+---
+sdk: streamlit
+colorFrom: blue
+colorTo: purple
+---
+
+
 ![CI](https://github.com/Shamikae/procore-ai-field-assistant/actions/workflows/ci.yml/badge.svg)
 ![Deploy – HF Space](https://github.com/Shamikae/procore-ai-field-assistant/actions/workflows/deploy-hf-space.yml/badge.svg)
 ![Docker – GHCR](https://github.com/Shamikae/procore-ai-field-assistant/actions/workflows/docker-ghcr.yml/badge.svg)
