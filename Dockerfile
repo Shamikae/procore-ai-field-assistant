@@ -16,10 +16,11 @@ RUN python -m pip install --upgrade pip && pip install -r requirements.txt
 COPY . .
 
 # Streamlit defaults for container
-ENV STREAMLIT_BROWSER_GATHER_USAGE_STATS=false \
-    STREAMLIT_SERVER_HEADLESS=true \
+ENV STREAMLIT_SERVER_HEADLESS=true \
     STREAMLIT_SERVER_PORT=8501 \
-    STREAMLIT_SERVER_ADDRESS=0.0.0.0
+    STREAMLIT_SERVER_ADDRESS=0.0.0.0 \
+    STREAMLIT_BROWSER_SERVER_ADDRESS="localhost" \
+    STREAMLIT_BROWSER_GATHER_USAGE_STATS=false
 
 EXPOSE 8501
 CMD ["streamlit", "run", "app/app.py"]
