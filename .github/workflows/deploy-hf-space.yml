@@ -12,39 +12,23 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Install Git LFS
+      # Optional: ensure only the essentials are pushed
+      - name: Prepare deploy folder
         run: |
-          sudo apt-get update
-          sudo apt-get install -y git-lfs
-          git lfs install
+          rm -rf dist && mkdir -p dist
+          rsync -a \
+            --exclude ".git" \
+            --exclude ".github" \
+            --exclude ".venv" \
+            --exclude "__pycache__" \
+            --exclude ".pytest_cache" \
+            --exclude "node_modules" \
+            --exclude "*.zip" \
+            ./ dist/
 
-      - name: Set up git user
-        run: |
-          git config --global user.email "actions@github.com"
-          git config --global user.name "GitHub Actions"
-
-      - name: Clone Space with credentials
-        env:
-          HF_USER: ${{ vars.HF_USER }}
-          HF_TOKEN: ${{ secrets.HF_TOKEN }}
-          HF_SPACE: ${{ vars.HF_SPACE }}
-        run: |
-          rm -rf space
-          # IMPORTANT: include username and token in the URL
-          git clone https://${HF_USER}:${HF_TOKEN}@huggingface.co/spaces/${HF_SPACE} space
-
-      - name: Sync repo into Space and push
-        env:
-          HF_USER: ${{ vars.HF_USER }}
-          HF_TOKEN: ${{ secrets.HF_TOKEN }}
-          HF_SPACE: ${{ vars.HF_SPACE }}
-        run: |
-          rsync -a --delete --exclude ".git" ./ space/
-          cd space
-          git add -A
-          if git diff --cached --quiet; then
-            echo "No changes to push."
-          else
-            git commit -m "Deploy from GitHub Actions: $GITHUB_SHA"
-            git push https://${HF_USER}:${HF_TOKEN}@huggingface.co/spaces/${HF_SPACE} HEAD:main
-          fi
+      - name: Push to Space
+        uses: huggingface/action-push-to-space@v1
+        with:
+          repo-token: ${{ secrets.HF_TOKEN }}           # HF write token
+          space: ${{ vars.HF_SPACE }}                   # e.g. shamikae/procore-ai-field-assistant
+          directory: dist                               # push only the prepared folder
