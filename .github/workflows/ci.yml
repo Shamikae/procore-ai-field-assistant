@@ -40,9 +40,12 @@ jobs:
         run: pytest -q
 
       - name: Package artifact (zip)
+        if: matrix.python-version == '3.11'
         run: |
           zip -r procore-ai-field-assistant-${{ github.sha }}.zip app data playbook metrics .streamlit README*.md || true
+
       - name: Upload artifact
+        if: matrix.python-version == '3.11'
         uses: actions/upload-artifact@v4
         with:
           name: procore-ai-field-assistant-${{ github.sha }}
