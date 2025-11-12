@@ -13,64 +13,27 @@ jobs:
   push-to-space:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout (with LFS)
+      - name: Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
           lfs: true
 
-      - name: Prepare deploy folder
-        run: |
-          rm -rf dist && mkdir -p dist
-          rsync -a \
-            --exclude ".git" \
-            --exclude ".github" \
-            --exclude ".venv" \
-            --exclude "__pycache__" \
-            --exclude ".pytest_cache" \
-            --exclude "node_modules" \
-            --exclude "*.zip" \
-            ./ dist/
-          cat > dist/app.py <<'PY'
-import runpy, pathlib, sys
-base = pathlib.Path(__file__).parent
-candidates = [base/"app"/"app.py", base/"app"/"main.py", base/"src"/"streamlit_app.py"]
-for p in candidates:
-    if p.exists():
-        runpy.run_path(str(p), run_name="__main__")
-        sys.exit(0)
-raise FileNotFoundError("No app file found among: " + ", ".join(map(str, candidates)))
-PY
-          cat > dist/requirements.txt <<'REQ'
-streamlit==1.39.0
-pandas==2.2.2
-REQ
-
-      - name: Configure git
+      - name: Set up git user
         run: |
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
+          git config --global user.name "GitHub Actions"
 
-      - name: Clone Space repo
-        env:
-          HF_SPACE: ${{ vars.HF_SPACE }}
-          HF_TOKEN: ${{ secrets.HF_TOKEN }}
-        run: |
-          rm -rf /tmp/space
-          git clone "https://oauth2:${HF_TOKEN}@huggingface.co/spaces/${HF_SPACE}" /tmp/space
-
-      - name: Sync dist → Space
+      # Optional: ensure we don't commit huge local artifacts
+      - name: Add sensible .gitignore (no venv, caches)
         run: |
           rsync -a --delete --exclude ".git" dist/ /tmp/space/
 
-      - name: Commit, rebase, and push
+      - name: Push to Space
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}          # create this secret (Write token)
+          HF_SPACE: ${{ vars.HF_SPACE }}             # e.g. shamikae/procore-ai-field-assistant
         run: |
-          cd /tmp/space
-          git add -A
-          if git diff --cached --quiet; then
-            echo "No changes to push."
-            exit 0
-          fi
-          git commit -m "Deploy from GitHub Actions: $GITHUB_SHA"
-          git pull --rebase origin main || true
-          git push origin HEAD:main
+          # Push current commit to the Space main branch
+          git push https://$(echo $HF_SPACE | cut -d/ -f1):$HF_TOKEN@huggingface.co/spaces/$HF_SPACE HEAD:main
