@@ -1,4 +1,7 @@
 ![CI](https://github.com/Shamikae/procore-ai-field-assistant/actions/workflows/ci.yml/badge.svg)
+![Deploy – HF Space](https://github.com/Shamikae/procore-ai-field-assistant/actions/workflows/deploy-hf-space.yml/badge.svg)
+![Docker – GHCR](https://github.com/Shamikae/procore-ai-field-assistant/actions/workflows/docker-ghcr.yml/badge.svg)
+
 # Procore AI Field Assistant (Mock Case Study)
 
 **Author:** Shamika Earle  
@@ -66,4 +69,7 @@ More detail in `metrics/metrics_plan.md`.
 ## 🔒 Notes
 - This is a **mock**, designed for interviews and portfolio review. No proprietary data.
 - When ready, replace stubs with live integrations (Procore API, Power BI, AWS Lambda).
+
+## Docker
+docker run -p 8501:8501 ghcr.io/shamikae/procore-ai-field-assistant/procore-ai-field-assistant:latest 
 

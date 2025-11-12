@@ -1,0 +1,34 @@
+name: Build & Push Docker (GHCR)
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch: {}
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write   # needed for GHCR push
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Login to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build
+        run: |
+          IMAGE=ghcr.io/${{ github.repository }}/procore-ai-field-assistant
+          docker build -t $IMAGE:latest -t $IMAGE:${{ github.sha }} .
+
+      - name: Push
+        run: |
+          IMAGE=ghcr.io/${{ github.repository }}/procore-ai-field-assistant
+          docker push $IMAGE:latest
+          docker push $IMAGE:${{ github.sha }}
