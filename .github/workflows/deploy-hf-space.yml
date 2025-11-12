@@ -3,6 +3,15 @@ name: Deploy to Hugging Face Spaces
 on:
   push:
     branches: [main]
+    paths:
+      - "app/**"
+      - ".streamlit/**"
+      - "data/**"
+      - "metrics/**"
+      - "playbook/**"
+      - "requirements.txt"
+      - "app.py"
+      - "README.md"
   workflow_dispatch:
 
 concurrency:
@@ -19,21 +28,49 @@ jobs:
           fetch-depth: 0
           lfs: true
 
-      - name: Set up git user
+      - name: Configure git
         run: |
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
-          git config --global user.name "GitHub Actions"
 
-      # Optional: ensure we don't commit huge local artifacts
-      - name: Add sensible .gitignore (no venv, caches)
+      - name: Clone Space repo
+        env:
+          HF_SPACE: ${{ vars.HF_SPACE }}
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: |
+          rm -rf /tmp/space
+          git clone "https://oauth2:${HF_TOKEN}@huggingface.co/spaces/${HF_SPACE}" /tmp/space
+
+      - name: Prepare dist (exclude binaries and junk)
+        run: |
+          rm -rf dist && mkdir -p dist
+          rsync -a \
+            --exclude ".git" \
+            --exclude ".github" \
+            --exclude ".venv" \
+            --exclude "__pycache__" \
+            --exclude ".pytest_cache" \
+            --exclude "node_modules" \
+            --exclude "*.zip" \
+            --exclude ".DS_Store" \
+            --exclude "assets/*.png" \
+            --exclude "assets/*.jpg" \
+            --exclude "assets/*.jpeg" \
+            --exclude "assets/*.gif" \
+            --exclude "assets/*.mp4" \
+            ./ dist/
+
+      - name: Sync dist → Space (mirror, delete stale files)
         run: |
           rsync -a --delete --exclude ".git" dist/ /tmp/space/
 
-      - name: Push to Space
-        env:
-          HF_TOKEN: ${{ secrets.HF_TOKEN }}          # create this secret (Write token)
-          HF_SPACE: ${{ vars.HF_SPACE }}             # e.g. shamikae/procore-ai-field-assistant
+      - name: Commit, rebase, and push
         run: |
-          # Push current commit to the Space main branch
-          git push https://$(echo $HF_SPACE | cut -d/ -f1):$HF_TOKEN@huggingface.co/spaces/$HF_SPACE HEAD:main
+          cd /tmp/space
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No changes to push."; exit 0
+          fi
+          git commit -m "Deploy from GitHub Actions (no binaries)"
+          git pull --rebase origin main || true
+          git push origin HEAD:main
